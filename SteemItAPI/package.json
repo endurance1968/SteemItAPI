@@ -5,5 +5,8 @@
   "main": "app.js",
   "author": {
     "name": "olaf.krause"
+  },
+  "dependencies": {
+    "steem": "^0.7.1"
   }
 }
