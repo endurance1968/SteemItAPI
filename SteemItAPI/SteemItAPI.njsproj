@@ -28,6 +28,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="config.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="start.js" />
     <Compile Include="steemapi.js">
       <SubType>Code</SubType>
