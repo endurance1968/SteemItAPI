@@ -1,0 +1,9 @@
+{
+  "name": "steem-it-api",
+  "version": "0.0.0",
+  "description": "SteemItAPI",
+  "main": "app.js",
+  "author": {
+    "name": "olaf.krause"
+  }
+}

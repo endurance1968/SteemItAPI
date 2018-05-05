@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2043
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "SteemItAPI", "SteemItAPI\SteemItAPI.njsproj", "{0A8A844B-81C6-4770-9ED6-A84C34EE923A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A8A844B-81C6-4770-9ED6-A84C34EE923A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A8A844B-81C6-4770-9ED6-A84C34EE923A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A8A844B-81C6-4770-9ED6-A84C34EE923A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A8A844B-81C6-4770-9ED6-A84C34EE923A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03640528-5D79-4C67-9C41-02A1EFC3B32B}
+	EndGlobalSection
+EndGlobal
