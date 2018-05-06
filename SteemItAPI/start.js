@@ -5,6 +5,7 @@ var steem = require('steem');
 
 // import my steem modules
 var steemapi = require('./steemapi');
+var mongoapi = require('./mongoapi');
 var config = require('./config');
 
 // just for testing purposes you should see a Hello World on your console prio to any further activity
@@ -127,40 +128,73 @@ function getAccountHistoryCB(err, result = []) {
             var operation = transaction.op;
             console.log("   transaction-id: " + transaction.trx_id + " timestamp: " + transaction.timestamp+" operationtype: " + operation[0]);
             if (operation[0] == 'vote') {
-                var voteoperation = operation[1];
+                let voteoperation = operation[1];
                 //console.log("       operation-voter: " + voteoperation.voter);
                 //console.log("       operation-author: " + voteoperation.author);
             } else if (operation[0] == 'author_reward') {
-                var arewardoperation = operation[1];
+                let arewardoperation = operation[1];
                 console.log("       operation-sbdpayout: " + arewardoperation.sbd_payout);
                 console.log("       operation-steempayout: " + arewardoperation.steem_payout);
             } else if (operation[0] == 'curation_reward') {
-                var arwardoperation = operation[1];
+                let arwardoperation = operation[1];
                 console.log("       operation-reward: " + arwardoperation.reward);
                 console.log("       operation-curator: " + arwardoperation.curator);
             } else if (operation[0] == 'custom_json') {
-                var customoperation = operation[1];
+                let customoperation = operation[1];
                 //console.log("       operation-id: " + customoperation.id);
             } else if (operation[0] == 'transfer') {
-                var transferoperation = operation[1];
+                let transferoperation = operation[1];
                 console.log("       operation-from: " + transferoperation.from);
                 console.log("       operation-to: " + transferoperation.to);
                 console.log("       operation-amount: " + transferoperation.amount);
             } else if (operation[0] == 'comment') {
-                var commentoperation = operation[1];
+                let commentoperation = operation[1];
                 //console.log("       operation-author: " + commentoperation.author);
             } else if (operation[0] == 'claim_reward_balance') {
-                var claimoperation = operation[1];
+                let claimoperation = operation[1];
                 console.log("       operation-account: " + claimoperation.account);
                 console.log("       operation-reward_steem: " + claimoperation.reward_steem);
                 console.log("       operation-reward_sbd: " + claimoperation.reward_sbd);
             } else if (operation[0] == 'account_update') {
-                var accountoperation = operation[1];
+                let accountoperation = operation[1];
             } else if (operation[0] == 'transfer_to_savings') {
-                var transferoperation = operation[1];
+                let transferoperation = operation[1];
+                console.log("       operation-amount: " + transferoperation.amount);
+                console.log("       operation-from: " + transferoperation.from);
+                console.log("       operation-to: " + transferoperation.to);
             } else if (operation[0] == 'transfer_to_vesting') {
-                var transferoperation = operation[1];
+                let transferoperation = operation[1];
+                console.log("       operation-amount: " + transferoperation.amount);
+                console.log("       operation-from: " + transferoperation.from);
+                console.log("       operation-to: " + transferoperation.to);
+            } else if (operation[0] == 'account_create_with_delegation') {
+                let accountcreateroperation = operation[1];
+            } else if (operation[0] == 'comment_options') {
+                let commentoptionoperation = operation[1];
+            } else if (operation[0] == 'delegate_vesting_shares') {
+                let delegatevestingroperation = operation[1];
+            } else if (operation[0] == 'account_witness_vote') {
+                let accountcreateroperation = operation[1];
+                console.log("       operation-account: " + accountcreateroperation.account);
+                console.log("       operation-witness: " + accountcreateroperation.witness);
+            } else if (operation[0] == 'fill_order') {
+                let fillorderoperation = operation[1];
+                console.log("       operation-owner: " + fillorderoperation.current_owner);
+                console.log("       operation-pays: " + fillorderoperation.current_pays);
+            } else if (operation[0] == 'limit_order_create') {
+                let ordercreateoperation = operation[1];
+                console.log("       operation-amount: " + ordercreateoperation.amount_to_sell);
+            } else if (operation[0] == 'comment_benefactor_reward') {
+                let commentbeneoperation = operation[1];
+                console.log("       operation-reward: " + commentbeneoperation.reward);
+            } else if (operation[0] == 'transfer_from_savings') {
+                let tfsoperation = operation[1];
+                console.log("       operation-amount: " + tfsoperation.amount);
+                console.log("       operation-from: " + tfsoperation.from);
+                console.log("       operation-to: " + tfsoperation.to);
             }
+                
+
             else {
                 console.log(operation[1]);
             }

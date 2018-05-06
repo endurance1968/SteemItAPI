@@ -7,6 +7,8 @@
     "name": "olaf.krause"
   },
   "dependencies": {
+    "mongodb": "^3.0.7",
+    "npm": "^6.0.0",
     "steem": "^0.7.1"
   }
 }
