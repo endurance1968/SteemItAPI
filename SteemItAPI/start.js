@@ -134,6 +134,10 @@ function getAccountHistoryCB(err, result = []) {
                 var arewardoperation = operation[1];
                 console.log("       operation-sbdpayout: " + arewardoperation.sbd_payout);
                 console.log("       operation-steempayout: " + arewardoperation.steem_payout);
+            } else if (operation[0] == 'curation_reward') {
+                var arwardoperation = operation[1];
+                console.log("       operation-reward: " + arwardoperation.reward);
+                console.log("       operation-curator: " + arwardoperation.curator);
             } else if (operation[0] == 'custom_json') {
                 var customoperation = operation[1];
                 //console.log("       operation-id: " + customoperation.id);
