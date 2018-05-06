@@ -10,8 +10,14 @@ exports.vote = function (wif, fromusername,tousername,articlename) {
     });
 }
 
-exports.getAccounts = function (accounts) {
+exports.getAccounts = function (accounts,callback) {
     steem.api.getAccounts(accounts, function (err, result) {
-        console.log(err, result);
+        callback(err,result);
+    });
+}
+
+exports.getAccountHistory = function (account,from=-1,limit=1, callback) {
+    steem.api.getAccountHistory(account, from, limit, function (err, result) {
+        callback(err, result);
     });
 }
