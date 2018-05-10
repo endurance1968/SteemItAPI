@@ -129,66 +129,87 @@ function getAccountHistoryCB(err, result = []) {
                 //console.log("       operation-author: " + voteoperation.author);
             } else if (operation[0] == 'author_reward') {
                 let arewardoperation = operation[1];
-                console.log("       operation-sbdpayout: " + arewardoperation.sbd_payout);
-                console.log("       operation-steempayout: " + arewardoperation.steem_payout);
+                //console.log("       operation-sbdpayout: " + arewardoperation.sbd_payout);
+                //console.log("       operation-steempayout: " + arewardoperation.steem_payout);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'curation_reward') {
                 let arwardoperation = operation[1];
-                console.log("       operation-reward: " + arwardoperation.reward);
-                console.log("       operation-curator: " + arwardoperation.curator);
+                //console.log("       operation-reward: " + arwardoperation.reward);
+                //console.log("       operation-curator: " + arwardoperation.curator);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'custom_json') {
                 let customoperation = operation[1];
-                console.log("       operation-id: " + customoperation.id);
-                console.log("       operation-json: " + customoperation.json);
+                //console.log("       operation-id: " + customoperation.id);
+                //console.log("       operation-json: " + customoperation.json);
             } else if (operation[0] == 'transfer') {
                 let transferoperation = operation[1];
-                console.log("       operation-from: " + transferoperation.from);
-                console.log("       operation-to: " + transferoperation.to);
-                console.log("       operation-amount: " + transferoperation.amount);
+                //console.log("       operation-from: " + transferoperation.from);
+                //console.log("       operation-to: " + transferoperation.to);
+                //console.log("       operation-amount: " + transferoperation.amount);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'comment') {
                 let commentoperation = operation[1];
                 //console.log("       operation-author: " + commentoperation.author);
             } else if (operation[0] == 'claim_reward_balance') {
                 let claimoperation = operation[1];
-                console.log("       operation-account: " + claimoperation.account);
-                console.log("       operation-reward_steem: " + claimoperation.reward_steem);
-                console.log("       operation-reward_sbd: " + claimoperation.reward_sbd);
+                //console.log("       operation-account: " + claimoperation.account);
+                //console.log("       operation-reward_steem: " + claimoperation.reward_steem);
+                //console.log("       operation-reward_sbd: " + claimoperation.reward_sbd);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'account_update') {
                 let accountoperation = operation[1];
             } else if (operation[0] == 'transfer_to_savings') {
                 let transferoperation = operation[1];
-                console.log("       operation-amount: " + transferoperation.amount);
-                console.log("       operation-from: " + transferoperation.from);
-                console.log("       operation-to: " + transferoperation.to);
+                //console.log("       operation-amount: " + transferoperation.amount);
+                //console.log("       operation-from: " + transferoperation.from);
+                //console.log("       operation-to: " + transferoperation.to);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'transfer_to_vesting') {
                 let transferoperation = operation[1];
-                console.log("       operation-amount: " + transferoperation.amount);
-                console.log("       operation-from: " + transferoperation.from);
-                console.log("       operation-to: " + transferoperation.to);
+                //console.log("       operation-amount: " + transferoperation.amount);
+                //console.log("       operation-from: " + transferoperation.from);
+                //console.log("       operation-to: " + transferoperation.to);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'account_create_with_delegation') {
                 let accountcreateroperation = operation[1];
             } else if (operation[0] == 'comment_options') {
                 let commentoptionoperation = operation[1];
             } else if (operation[0] == 'delegate_vesting_shares') {
                 let delegatevestingroperation = operation[1];
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'account_witness_vote') {
                 let accountcreateroperation = operation[1];
-                console.log("       operation-account: " + accountcreateroperation.account);
-                console.log("       operation-witness: " + accountcreateroperation.witness);
+                //console.log("       operation-account: " + accountcreateroperation.account);
+                //console.log("       operation-witness: " + accountcreateroperation.witness);
             } else if (operation[0] == 'fill_order') {
                 let fillorderoperation = operation[1];
-                console.log("       operation-owner: " + fillorderoperation.current_owner);
-                console.log("       operation-pays: " + fillorderoperation.current_pays);
+                //console.log("       operation-owner: " + fillorderoperation.current_owner);
+                //console.log("       operation-pays: " + fillorderoperation.current_pays);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'limit_order_create') {
                 let ordercreateoperation = operation[1];
-                console.log("       operation-amount: " + ordercreateoperation.amount_to_sell);
+                //console.log("       operation-amount: " + ordercreateoperation.amount_to_sell);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'comment_benefactor_reward') {
                 let commentbeneoperation = operation[1];
-                console.log("       operation-reward: " + commentbeneoperation.reward);
+                //console.log("       operation-reward: " + commentbeneoperation.reward);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             } else if (operation[0] == 'transfer_from_savings') {
                 let tfsoperation = operation[1];
-                console.log("       operation-amount: " + tfsoperation.amount);
-                console.log("       operation-from: " + tfsoperation.from);
-                console.log("       operation-to: " + tfsoperation.to);
+                //console.log("       operation-amount: " + tfsoperation.amount);
+                //console.log("       operation-from: " + tfsoperation.from);
+                //console.log("       operation-to: " + tfsoperation.to);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
+            } else if (operation[0] == 'fill_transfer_from_savings') {
+                let tfsoperation = operation[1];
+                //console.log("       operation-amount: " + tfsoperation.amount);
+                //console.log("       operation-from: " + tfsoperation.from);
+                //console.log("       operation-to: " + tfsoperation.to);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
+            } else if (operation[0] == 'delete_comment') {
+                let tfsoperation = operation[1];
+                //console.log("       operation-author: " + tfsoperation.author);
+                //console.log("       operation-permlink: " + tfsoperation.permlink);
             }
                 
 
@@ -199,15 +220,33 @@ function getAccountHistoryCB(err, result = []) {
         }
     } else { console.log("getAccountHistory failed"); }
 }
-steemapi.getAccountHistory(config.steem.username, -1, 100, getAccountHistoryCB);
+//steemapi.getAccountHistory(config.steem.username, -1, 10000, getAccountHistoryCB);
+steemapi.getAccountHistory("taxguy", -1, 10000, getAccountHistoryCB);
 
 //
 // I used mongo 3.6 for testing installed on an Ubuntu server (don't forget to open the firewall for port 27017)
 // For checking I installed mongodb also on my windows development client
 // using the compass client
+// looks like without any content there will be no DB, I assume the explicit createDB call is not required 
 //
-mongoapi.createMongoDB(config.mongo.url, "my_steemit_test");
+//mongoapi.createMongoDB(config.mongo.url, "crypto_matrix");
+//
 // creates a collection within our db
-mongoapi.createCollection(config.mongo.url, "my_steemit_test","mycollection");
+// Note: collections are similar to tables in a classic SQL db
+//
+//mongoapi.createCollection(config.mongo.url, "crypto_matrix","steemit_history");
+//mongoapi.createCollection(config.mongo.url, "crypto_matrix", "steemit_account");
+// next step is create documents
+// mongodb stores data as bson documents which is a binary representation of json http://bsonspec.org/
+// 
+var mydoc = {
+    name: { first: "Olaf", last: "Krause" },
+    birth: new Date('Jun 23, 1968'),
+    death: new Date('Jun 07, 9999'),
+    contribs: ["steemit test", "steemit"],
+    views: 5734
+};
+// insert a document/object which is similar to create a record in a classic SQL DB
+//mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steemit_history", mydoc);
 
 console.log('Good bye');
