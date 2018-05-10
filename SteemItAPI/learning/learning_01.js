@@ -1,9 +1,8 @@
 'use strict';
 
 // import my steem modules
-var steemapi = require('./api/steemapi');
-var mongoapi = require('./api/mongoapi');
-var config = require('./config');
+var config = require('../config');
+var steemapi = require('../api/steemapi.js');
 
 // just for testing purposes you should see a Hello World on your console prio to any further activity
 console.log('Starting my activities');
@@ -199,15 +198,7 @@ function getAccountHistoryCB(err, result = []) {
         }
     } else { console.log("getAccountHistory failed"); }
 }
+// get the latest 100 history entries
 steemapi.getAccountHistory(config.steem.username, -1, 100, getAccountHistoryCB);
-
-//
-// I used mongo 3.6 for testing installed on an Ubuntu server (don't forget to open the firewall for port 27017)
-// For checking I installed mongodb also on my windows development client
-// using the compass client
-//
-mongoapi.createMongoDB(config.mongo.url, "my_steemit_test");
-// creates a collection within our db
-mongoapi.createCollection(config.mongo.url, "my_steemit_test","mycollection");
 
 console.log('Good bye');

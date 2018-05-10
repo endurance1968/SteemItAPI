@@ -4,7 +4,8 @@
 
 var steem = require('steem');
 
-exports.vote = function (wif, fromusername,tousername,articlename) {
+exports.vote = function (authaccount,authpwd,fromusername, tousername, articlename) {
+    var wif = steem.auth.toWif(authaccount,authpwd, 'posting');
     steem.broadcast.vote(wif, fromusername, tousername, articlename, 10000, function (err, result) {
         console.log(err, result);
     });

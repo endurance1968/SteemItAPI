@@ -11,7 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0a8a844b-81c6-4770-9ed6-a84c34ee923a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>start.js</StartupFile>
+    <StartupFile>learning\learning_01.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -31,15 +31,20 @@
     <Compile Include="config.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="mongoapi.js">
+    <Compile Include="api\mongoapi.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="learning\learning_01.js" />
     <Compile Include="start.js" />
-    <Compile Include="steemapi.js">
+    <Compile Include="api\steemapi.js">
       <SubType>Code</SubType>
     </Compile>
     <Content Include="package.json" />
     <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="api\" />
+    <Folder Include="learning\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
