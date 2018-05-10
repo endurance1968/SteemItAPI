@@ -210,8 +210,27 @@ function getAccountHistoryCB(err, result = []) {
                 let tfsoperation = operation[1];
                 //console.log("       operation-author: " + tfsoperation.author);
                 //console.log("       operation-permlink: " + tfsoperation.permlink);
+            } else if (operation[0] == 'return_vesting_delegation') {
+                let tfsoperation = operation[1];
+                //console.log("       operation-account: " + tfsoperation.account);
+                //console.log("       operation-vesting_shares: " + tfsoperation.vesting_shares);
+            } else if (operation[0] == 'fill_vesting_withdraw') {
+                let tfsoperation = operation[1];
+                //console.log("       operation-withdrawn: " + tfsoperation.withdrawn);
+                //console.log("       operation-deposited: " + tfsoperation.deposited);
+                //console.log("       operation-from_account: " + tfsoperation.from_account);
+                //console.log("       operation-to.account: " + tfsoperation.to_account);
+                mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
+            } else if (operation[0] == 'limit_order_cancel') {
+                let tfsoperation = operation[1];
+                //console.log("       operation-owner: " + tfsoperation.owner);
+                //console.log("       operation-orderid: " + tfsoperation.orderid);
+            } else if (operation[0] == 'account_witness_proxy') {
+                let tfsoperation = operation[1];
+                //console.log("       operation-account: " + tfsoperation.accout);
+                //console.log("       operation-proxy: " + tfsoperation.proxy);
+                //mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steem_trx_" + operation[0], transaction);
             }
-                
 
             else {
                 console.log(operation[1]);
@@ -221,7 +240,7 @@ function getAccountHistoryCB(err, result = []) {
     } else { console.log("getAccountHistory failed"); }
 }
 //steemapi.getAccountHistory(config.steem.username, -1, 10000, getAccountHistoryCB);
-steemapi.getAccountHistory("taxguy", -1, 10000, getAccountHistoryCB);
+steemapi.getAccountHistory("endurance1968", -1, 10000, getAccountHistoryCB);
 
 //
 // I used mongo 3.6 for testing installed on an Ubuntu server (don't forget to open the firewall for port 27017)
@@ -239,7 +258,7 @@ steemapi.getAccountHistory("taxguy", -1, 10000, getAccountHistoryCB);
 // next step is create documents
 // mongodb stores data as bson documents which is a binary representation of json http://bsonspec.org/
 // 
-var mydoc = {
+var testdoc = {
     name: { first: "Olaf", last: "Krause" },
     birth: new Date('Jun 23, 1968'),
     death: new Date('Jun 07, 9999'),
@@ -247,6 +266,6 @@ var mydoc = {
     views: 5734
 };
 // insert a document/object which is similar to create a record in a classic SQL DB
-//mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steemit_history", mydoc);
+//mongoapi.insertObject(config.mongo.url, "crypto_matrix", "steemit_history", testdoc);
 
 console.log('Good bye');
