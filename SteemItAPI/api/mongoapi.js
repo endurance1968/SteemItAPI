@@ -10,30 +10,58 @@ exports.createMongoDB = function(url,dbname) {
     });
 }
 
-exports.createCollection = function (url,dbname,collection) {
-    mongoclient.connect(url, function (err, db) {
+
+exports.createCollection = function (dbo, collection) {
+    dbo.createCollection(collection, function (err, res) {
         if (err)
             throw err;
-        var dbo = db.db(dbname);
-        dbo.createCollection(collection, function (err, res) {
-            if (err)
-                throw err;
-            //console.log("Collection "+collection+" created!");
-            db.close();
-        });
+        console.log("Collection "+collection+" created!");
     });
 }
 
-exports.insertObject = function (url, dbname, collection,myobj) {
-    mongoclient.connect(url, function (err, db) {
+exports.insertObject = function (dbo, collection,myobj) {
+        dbo.collection(collection).insertOne(myobj, function (err, res) {
         if (err)
             throw err;
-        var dbo = db.db(dbname);
-        dbo.collection(collection).insertOne(myobj, function (err, res) {
-            if (err)
-                throw err;
-            //console.log("1 document inserted");
-            db.close();
-        });
+    });
+}
+
+//
+// Returns all objects of an collection
+// limiting the return fields as specified in fields
+// e.g. { _id: 0, name: 1, address: 1 }
+// where 0 means do not return
+// You are not allowed to specify both 0 and 1 values in the same object (except if one of the fields is the _id field). 
+// If you specify a field with the value 0, all other fields get the value 1, and vice versa
+//
+exports.find = function (dbo, collection, query , fields , callback) {
+    dbo.collection(collection).find(query,fields).toArray(function (err, result) {
+        if (err)
+            throw err;
+        //console.log(result);
+        callback(err, result);
+    });
+}
+
+exports.createUniqueIndex = function (dbo, collection, index, callback) {
+    dbo.collection(collection).createIndex(index, { unique: true }, function (err, result) {
+        if (err)
+            throw err;
+        callback(err, result);
+    });
+}
+
+exports.createIndex = function (dbo, collection, index, callback) {
+    dbo.collection(collection).createIndex(index, function (err, result) {
+        if (err)
+            throw err;
+        callback(err,result);
+    });
+}
+
+exports.updateOne = function (dbo, collection, query, newvalues, callback) {
+    dbo.collection(collection).updateOne(query, newvalues, function (err, res) {
+        if (err)
+            throw err;
     });
 }
