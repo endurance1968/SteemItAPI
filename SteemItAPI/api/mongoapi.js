@@ -34,12 +34,11 @@ exports.insertObject = function (dbo, collection,myobj) {
 // You are not allowed to specify both 0 and 1 values in the same object (except if one of the fields is the _id field). 
 // If you specify a field with the value 0, all other fields get the value 1, and vice versa
 //
-exports.find = function (dbo, collection, query , fields , callback) {
+exports.find = function (dbo, collection, query , fields , customdata, callback) {
     dbo.collection(collection).find(query,fields).toArray(function (err, result) {
         if (err)
             throw err;
-        //console.log(result);
-        callback(err, result);
+        callback(err, result, customdata);
     });
 }
 

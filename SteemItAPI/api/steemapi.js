@@ -18,8 +18,8 @@ exports.getAccounts = function (accounts,callback) {
 }
 
 // from must be greater than limit (or -1)
-exports.getAccountHistory = function (account, from=-1, limit=1, callback) {
-    steem.api.getAccountHistory(account, from, limit, function (err, result) {
-        callback(account, from, err, result);
+exports.getAccountHistory = function (accountname, from=-1, limit=1, high=-1, callback) {
+    steem.api.getAccountHistory(accountname, from, limit, function (err, result) {
+        callback(accountname, from, high, err, result);
     });
 }

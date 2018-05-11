@@ -10,7 +10,7 @@ config.steem.accounthistmaxretr = 2000;
 
 config.mongo.url = "mongodb://mongo.research.ok-edv.de:27017/";
 config.mongo.dbname = "crypt_matrix";
-config.mongo.steem_trx_collection_prefix = "steem_ptrx_";
+config.mongo.steem_ptrx_collection_prefix = "steem_ptrx_";
 config.mongo.steem_account_collection = "account_stats";
 
 //finally
