@@ -7,6 +7,8 @@ var steemapi = require('./api/steemapi');
 var mongoapi = require('./api/mongoapi');
 var config = require('./config');
 
+var fs = require('fs');
+
 var dbo;
 var test_account_names = [
     "steemitblog",
@@ -38,14 +40,14 @@ function init() {
         if (err)
             throw err;
         dbo = db.db(config.mongo.dbname);
-        runCB();
+        run();
     });
 }
 
 //
 // will be called by init functions as callback to start program
 //
-function runCB() {
+function run() {
     //
     // I used mongo 3.6 for testing installed on an Ubuntu server (don't forget to open the firewall for port 27017)
     // For checking I installed mongodb also on my windows development client
@@ -66,8 +68,14 @@ function runCB() {
     // Do some analyses on the data
     // since all calls are asysnc you might not get any result at the first run
     //
+    var currentYear = new Date().getUTCFullYear();
     for (let i = 0; i < test_account_names.length; i++) {
-        mongoapi.find(dbo, "steem_ptrx_claim_reward_balance", { timestamp: RegExp('2018-05.*'), 'account_hist_name': test_account_names[i] }, { _id: 0 }, test_account_names[i], find_claim_reward_balanceCB);
+        // write output for each year
+        for (var year = 2016; year <= currentYear; year++) {
+            var csv = createCsvSteemOutputHeader();
+            writeFile("d:\\temp\\steem" + '-' + test_account_names[i] + '-' + year + '.csv', csv);
+            mongoapi.find(dbo, "steem_ptrx_claim_reward_balance", { timestamp: RegExp(year+'.*'), 'account_hist_name': test_account_names[i] }, { _id: 0 }, test_account_names[i], find_claim_reward_balanceCB);
+        }
     }
     console.log('Good bye all actions triggered');
 }
@@ -201,13 +209,35 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             let operation = transaction.op;
             let claimoperation = operation[1];
 
-            sbd += getFloatValue(claimoperation.reward_sbd);
-            steem += getFloatValue(claimoperation.reward_steem);
-            vests += getFloatValue(claimoperation.reward_vests);
+            sbd     = getFloatValue(claimoperation.reward_sbd);
+            steem   = getFloatValue(claimoperation.reward_steem);
+            vests   = getFloatValue(claimoperation.reward_vests);
+
+            //
+            // Export to CSV
+            //
+            var csv = "";
+            var year = 2018;
+            var filename = "d:\\temp\\steem" + '-' + customdata + '-' + year + '.csv';
+            /*
+            // Master CSV Data Line
+            csv = "year;" + "quarter;" + "month;" + "week;" + "currency;" + "date;" + "date / time;" + "transaction id;" + "In/out;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount" + "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
+            */
+            csv = "year;" + "quarter;" + "month;" + "week;" + "SBD;" + "date;" + "date / time;" + "transaction id;" + "IN;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount;" +" EUR Balance';"+ "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + sbd + ";" + "Prior Balance;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
+            appendFile(filename, csv);
+            csv = "year;" + "quarter;" + "month;" + "week;" + "STEEM;" + "date;" + "date / time;" + "transaction id;" + "IN;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount;" + " EUR Balance';" + "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + steem + ";" + "Prior Balance;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
+            appendFile(filename, csv);
+            csv = "year;" + "quarter;" + "month;" + "week;" + "VESTS;" + "date;" + "date / time;" + "transaction id;" + "IN;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount;" + " EUR Balance';" + "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + vests + ";" + "Prior Balance;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
+            appendFile(filename, csv);
         }
-
-        console.log("Sum of " + result.length + " reward entries for account " + customdata+" - steem: " + steem+" sbd: "+sbd+" vests: "+vests);
-
     } else {
         console.log("find_claim_reward_balanceCB failed");
     }
@@ -276,6 +306,61 @@ function getAccountSummeriesCB(err, result = []) {
         console.log("getAccount failed");
     }
 }
+
+function appendFile(pFilename, pContent) {
+    try {
+        fs.appendFileSync(pFilename, pContent);
+    } catch (ex) {
+        console.error('> Error occured: ' + ex);
+        throw ex;
+    }
+}
+
+function writeFile(pFilename, pContent) {
+    try {
+        if (fs.existsSync(pFilename))
+            fs.unlinkSync(pFilename);
+        fs.writeFileSync(pFilename, pContent);
+    } catch (ex) {
+        console.error('> Error occured: ' + ex);
+        throw ex;
+    }
+}
+
+function createCsvSteemOutputHeader() {
+    try {
+        var output = '';
+        output += 'Year;';
+        output += 'Quarter;';
+        output += 'Month;';
+        output += 'Week;';
+        output += 'Currency;';
+        output += 'Date;';
+        output += 'Date/Time;';
+        output += 'Transaction ID;';
+        output += 'In/Out;';
+        output += 'Type;';
+        output += 'From Account;';
+        output += 'To Account;';
+        output += 'Info;';
+        output += 'EUR Prior Belance;';
+        output += 'EUR Amount;';
+        output += 'EUR Balance;';
+        output += 'EUR Capital Gain;';
+        output += 'From Type;';
+        output += 'To Type;';
+        output += 'Amount;';
+        output += 'Prior Balance;';
+        output += 'EUR-SBD Rate;';
+        output += 'EUR-STEEM Rate;';
+        output += 'EUR-VESTS Rate;';
+        output += '\n';
+        return output;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 
 function nullCB() { }
 function updateAccountDataDoneCB(err, result) {}
