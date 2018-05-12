@@ -43,7 +43,7 @@ exports.find = function (dbo, collection, query , fields , customdata, callback)
 }
 
 exports.createUniqueIndex = function (dbo, collection, index, callback) {
-    dbo.collection(collection).createIndex(index, { unique: true }, function (err, result) {
+    dbo.collection(collection).createIndex(index, { unique: true, background: true }, function (err, result) {
         if (err)
             throw err;
         callback(err, result);
@@ -62,6 +62,6 @@ exports.updateOne = function (dbo, collection, query, newvalues, callback) {
     dbo.collection(collection).updateOne(query, newvalues, function (err, result) {
         if (err)
             throw err;
-        callback(err,result)
+        callback(err, result, newvalues)
     });
 }

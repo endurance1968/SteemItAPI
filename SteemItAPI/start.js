@@ -21,118 +21,23 @@ function evalAccountHistoryPayments(accountname, transaction, trxindex){
     transaction.account_hist_idx = trxindex;
     transaction.account_hist_name = accountname;
 
-    if (operation[0] == 'author_reward') {
-        let arewardoperation = operation[1];
-        //console.log("       operation-sbdpayout: " + arewardoperation.sbd_payout);
-        //console.log("       operation-steempayout: " + arewardoperation.steem_payout);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'curation_reward') {
-        let arwardoperation = operation[1];
-        //console.log("       operation-reward: " + arwardoperation.reward);
-        //console.log("       operation-curator: " + arwardoperation.curator);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'transfer') {
-        let transferoperation = operation[1];
-        //console.log("       operation-from: " + transferoperation.from);
-        //console.log("       operation-to: " + transferoperation.to);
-        //console.log("       operation-amount: " + transferoperation.amount);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'claim_reward_balance') {
-        let claimoperation = operation[1];
-        //console.log("       operation-account: " + claimoperation.account);
-        //console.log("       operation-reward_steem: " + claimoperation.reward_steem);
-        //console.log("       operation-reward_sbd: " + claimoperation.reward_sbd);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'transfer_to_savings') {
-        let transferoperation = operation[1];
-        //console.log("       operation-amount: " + transferoperation.amount);
-        //console.log("       operation-from: " + transferoperation.from);
-        //console.log("       operation-to: " + transferoperation.to);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'transfer_to_vesting') {
-        let transferoperation = operation[1];
-        //console.log("       operation-amount: " + transferoperation.amount);
-        //console.log("       operation-from: " + transferoperation.from);
-        //console.log("       operation-to: " + transferoperation.to);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'comment_benefactor_reward') {
-        let commentbeneoperation = operation[1];
-        //console.log("       operation-reward: " + commentbeneoperation.reward);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'transfer_from_savings') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-amount: " + tfsoperation.amount);
-        //console.log("       operation-from: " + tfsoperation.from);
-        //console.log("       operation-to: " + tfsoperation.to);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'fill_transfer_from_savings') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-amount: " + tfsoperation.amount);
-        //console.log("       operation-from: " + tfsoperation.from);
-        //console.log("       operation-to: " + tfsoperation.to);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'fill_vesting_withdraw') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-withdrawn: " + tfsoperation.withdrawn);
-        //console.log("       operation-deposited: " + tfsoperation.deposited);
-        //console.log("       operation-from_account: " + tfsoperation.from_account);
-        //console.log("       operation-to.account: " + tfsoperation.to_account);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'feed_publish') {
-        let tfsoperation = operation[1];
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'producer_reward') {
-        let tfsoperation = operation[1];
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'shutdown_witness') {
-        let tfsoperation = operation[1];
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'witness_update') {
-        let tfsoperation = operation[1];
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'withdraw_vesting') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-account: " + tfsoperation.account);
-        //console.log("       operation-vesting_shares: " + tfsoperation.proxy);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'convert') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-amount: " + tfsoperation.amount);
-        //console.log("       operation-owner: " + tfsoperation.owner);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'fill_convert_request') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-amount_in: " + tfsoperation.amount_in);
-        //console.log("       operation-amount_in: " + tfsoperation.amount_out);
-        //console.log("       operation-owner: " + tfsoperation.owner);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'interest') {
-        let tfsoperation = operation[1];
-        //console.log("       operation-interest: " + tfsoperation.interest);
-        //console.log("       operation-owner: " + tfsoperation.owner);
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'request_account_recovery') {
-        let tfsoperation = operation[1];
-        //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'account_create') {
-        let tfsoperation = operation[1];
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else if (operation[0] == 'pow') {
-        let tfsoperation = operation[1];
-        mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-    } else {
-        //console.log("No payment relevant transaction");
-        return false;
+    for (let i = 0; i < config.mongo.steam_ptrx_collections.length; i++) {
+        if (operation[0] === config.mongo.steam_ptrx_collections[i]) {
+            mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
+            return trxindex;
+        }
     }
-
-    // update account retrieval status
-    //console.log(trxindex);
-    mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { low_ptrx: trxindex } },updateOneCB)
-    return true;
+    // no suitable operation found
+    return -1;
 }
 
-function updateOneCB(err, result) {
-
+function updateOneCB(err, result, newvalues) {
+    if (err != null) {
+        console.log(err);
+    }
+    else {
+        //console.log("updateOneCB newvals: " + newvalues.$set.low_ptrx);
+    }
 }
 
 //
@@ -140,14 +45,15 @@ function updateOneCB(err, result) {
 //
 function getAccountHistoryCB(accountname, from, high, err, result = []) {
     if (err == null) {
+        let finalcall = false;
         // we should get an array with data of accounts
         if (result.length > 0) {
-            let newfrom = result[result.length - 1][0];
+            let lastindex = result[result.length - 1][0];
             if (high === -1) {
-                mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { high_ptrx: newfrom } }, updateOneCB)
-                high = newfrom;
+                mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { high_ptrx: lastindex } }, updateOneCB)
+                high = lastindex;
             }
-            newfrom = newfrom - (config.steem.accounthistmaxretr + 1);
+            let newfrom = lastindex - (config.steem.accounthistmaxretr + 1);
             if (newfrom > config.steem.accounthistmaxretr) {
                 console.log("getAccountHistory from index " + (newfrom + config.steem.accounthistmaxretr + 1) + " for " + accountname);
                 steemapi.getAccountHistory(accountname, newfrom, config.steem.accounthistmaxretr, high, getAccountHistoryCB);
@@ -158,91 +64,44 @@ function getAccountHistoryCB(accountname, from, high, err, result = []) {
                     steemapi.getAccountHistory(accountname, newfrom, newfrom, high, getAccountHistoryCB);
                 }
                 else
-                    console.log("getAccountHistory for " + accountname + " done");
+                    console.log("getAccountHistory for " + accountname + " done. LastIndex: " + lastindex);
             }
         }
         else
             console.log("no data retrieved for account: " + account);
 
-        for (let i = (result.length-1); i >=0 ; i--) {
+        let trxindex = -1;
+        let handled = false;
+        for (let i = (result.length - 1); i >= 0; i--) {
             //console.log(result);
             //console.log("history-ID: " + result[i][0]);
             let transaction = result[i][1];
 
-            var handled = evalAccountHistoryPayments(accountname, transaction,result[i][0]);
-            if (handled == false) {
+            let returnval = evalAccountHistoryPayments(accountname, transaction, result[i][0]);
+            if (returnval == -1) {
                 //console.log("   transaction-block: " + transaction.block);
                 let operation = transaction.op;
                 //console.log("   transaction-id: " + transaction.trx_id + " timestamp: " + transaction.timestamp+" operationtype: " + operation[0]);
-                if (operation[0] == 'vote') {
-                    let voteoperation = operation[1];
-                    //console.log("       operation-voter: " + voteoperation.voter);
-                    //console.log("       operation-author: " + voteoperation.author);
-                } else if (operation[0] == 'custom_json') {
-                    let customoperation = operation[1];
-                    //console.log("       operation-id: " + customoperation.id);
-                    //console.log("       operation-json: " + customoperation.json);
-                } else if (operation[0] == 'comment') {
-                    let commentoperation = operation[1];
-                    //console.log("       operation-author: " + commentoperation.author);
-                } else if (operation[0] == 'account_update') {
-                    let accountoperation = operation[1];
-                } else if (operation[0] == 'account_create_with_delegation') {
-                    let accountcreateroperation = operation[1];
-                } else if (operation[0] == 'comment_options') {
-                    let commentoptionoperation = operation[1];
-                } else if (operation[0] == 'delegate_vesting_shares') {
-                    let delegatevestingroperation = operation[1];
-                    //console.log("       operation-delegator: " + delegatevestingroperation.delegator);
-                    //console.log("       operation-delegatee: " + delegatevestingroperation.delegatee);
-                    //console.log("       operation-vesting_shares: " + delegatevestingroperation.vesting_shares);
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'account_witness_vote') {
-                    let accountcreateroperation = operation[1];
-                    //console.log("       operation-account: " + accountcreateroperation.account);
-                    //console.log("       operation-witness: " + accountcreateroperation.witness);
-                } else if (operation[0] == 'fill_order') {
-                    let fillorderoperation = operation[1];
-                    //console.log("       operation-owner: " + fillorderoperation.current_owner);
-                    //console.log("       operation-pays: " + fillorderoperation.current_pays);
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'limit_order_create') {
-                    let ordercreateoperation = operation[1];
-                    //console.log("       operation-amount: " + ordercreateoperation.amount_to_sell);
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'limit_order_cancel') {
-                    let tfsoperation = operation[1];
-                    //console.log("       operation-owner: " + tfsoperation.owner);
-                    //console.log("       operation-orderid: " + tfsoperation.orderid);
-                } else if (operation[0] == 'delete_comment') {
-                    let tfsoperation = operation[1];
-                    //console.log("       operation-author: " + tfsoperation.author);
-                    //console.log("       operation-permlink: " + tfsoperation.permlink);
-                } else if (operation[0] == 'return_vesting_delegation') {
-                    let tfsoperation = operation[1];
-                    //console.log("       operation-account: " + tfsoperation.account);
-                    //console.log("       operation-vesting_shares: " + tfsoperation.vesting_shares);
-                } else if (operation[0] == 'account_witness_proxy') {
-                    let tfsoperation = operation[1];
-                    //console.log("       operation-account: " + tfsoperation.account);
-                    //console.log("       operation-proxy: " + tfsoperation.proxy);
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'request_account_recovery') {
-                    let tfsoperation = operation[1];
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'recover_account') {
-                    let tfsoperation = operation[1];
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'set_withdraw_vesting_route') {
-                    let tfsoperation = operation[1];
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else if (operation[0] == 'cancel_transfer_from_savings') {
-                    let tfsoperation = operation[1];
-                    //mongoapi.insertObject(dbo, config.mongo.steem_ptrx_collection_prefix + operation[0], transaction);
-                } else {
-                    console.log(operation[1]);
+                for (let j = 0; j < config.mongo.steem_otrx_collection.length; j++) {
+                    if (operation[0] === config.mongo.steem_otrx_collection[j]) {
+                        handled = true;
+                        break;
+                    }
                 }
+            } else {
+                trxindex = returnval;
+                handled = true;
             }
+
+            if (handled != true) {
+                console.log("unhandled opertion: " + operation[0]);
+            }
+        }
+        // update latest insert stat
+        // this update will not work properly as the functions are asyncronous therefore later calls might be earlier and  overwritten
+        if (trxindex != -1) { 
+            mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { low_ptrx: trxindex } }, updateOneCB);
+            //console.log("getAccountHistory for account: " + accountname + " updaterequest low_ptrx: " + trxindex)
         }
     } else {
         //err!=null
@@ -300,12 +159,22 @@ function createAccountDocCB(err, result,customdata) {
     }
     if (result.length === 1) {
         // one result 
-        let from = result[0].low_ptrx;
+        let from = result[0].low_ptrx-1; // start one lower than stopped
         let high = result[0].high_ptrx;
-        if (from >= config.steem.accounthistmaxretr)
-            steemapi.getAccountHistory(customdata, from, config.steem.accounthistmaxretr, high, getAccountHistoryCB);
-        else
-            steemapi.getAccountHistory(customdata, from, from, high, getAccountHistoryCB);
+        if (from <= -1 && high === -1) {
+            // nothing done yet can happen when program is stopped between updated
+            steemapi.getAccountHistory(customdata, -1, config.steem.accounthistmaxretr, -1, getAccountHistoryCB);
+        } else {
+            if (from >= config.steem.accounthistmaxretr)
+                steemapi.getAccountHistory(customdata, from, config.steem.accounthistmaxretr, high, getAccountHistoryCB);
+            else {
+                if (from > 0)
+                    steemapi.getAccountHistory(customdata, from, from, high, getAccountHistoryCB);
+                else {
+                    console.log("createAccountDocCB nothing to do for "+customdata);
+                }
+            }
+        }
     }
 }
 
@@ -347,22 +216,23 @@ function createAccountCollectionIndexCB(err,indexName) {
         "theaustrianguy",
         "lenatramper",
         "uwelang",
-        "steemitblog"/*,
+        "steemitblog",
         "berniesanders",
         "adsactly",
         "haejin",
         "jedigeiss",
-        "dtube",
+        "dtube"/*,
         "steem"*/
     ];
     for (let i = 0; i < accountnames.length; i++) {
         // search for the documente related to the account and do something with it
-        mongoapi.find(dbo, config.mongo.steem_account_collection, { account: accountnames[i] }, { _id: 0 }, accountnames[i], createAccountDocCB)
+        mongoapi.find(dbo, config.mongo.steem_account_collection, { account: accountnames[i] }, { _id: 0 }, accountnames[i], createAccountDocCB);
     }
     // Update the account data
     steemapi.getAccounts(accountnames, getAccountSummeriesCB);
 }
 
+function nullCB() { }
 
 function runCB() {
     //
@@ -379,8 +249,9 @@ function runCB() {
     //mongoapi.createCollection(dbo,"steemit_history");
     //mongoapi.createCollection(dbo, config.mongo.steem_account_collection);  
     mongoapi.createUniqueIndex(dbo, config.mongo.steem_account_collection, "account", createAccountCollectionIndexCB);
-
-
+    for (let i = 0; i < config.mongo.steam_ptrx_collections.length; i++) {
+        mongoapi.createUniqueIndex(dbo, config.mongo.steem_ptrx_collection_prefix + config.mongo.steam_ptrx_collections[i], { account_hist_idx: 1, account_hist_name: 1 }, nullCB);
+    }
     //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "endurance1968" }, { _id: 0 }, find_claim_reward_balanceCB);
     //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "taxguy" }, { _id: 0 }, find_claim_reward_balanceCB);
     //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "theaustrianguy" }, { _id: 0 }, find_claim_reward_balanceCB);
