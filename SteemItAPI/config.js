@@ -6,7 +6,8 @@ config.mongo = {};
 //global configuration
 config.steem.username = process.env.STEEM_USER || 'endurance1968';
 config.steem.password = process.env.STEEM_PASSWORD || 'ENTER_PASSWORD_HERE'; // Masterpwd!
-config.steem.accounthistmaxretr = 5000;
+// maximum allowed is 10000 but 1000 seems to be more reliable 
+config.steem.accounthistmaxretr = 1000;
 
 config.mongo.url = "mongodb://mongo.research.ok-edv.de:27017/";
 config.mongo.dbname = "crypt_matrix";

@@ -8,10 +8,89 @@ var mongoapi = require('./api/mongoapi');
 var config = require('./config');
 
 var dbo;
+var test_account_names = [
+    "steemitblog",
+    "dtube",
+    "haejin",
+    "berniesanders",
+    "steem",
+    "endurance1968"/*,
+    "taxguy",
+    "sempervideo",
+    "jedigeiss",
+    "theaustrianguy",
+    "adsactly",
+    "lenatramper",
+    "uwelang"*/
+];
 
 // just for testing purposes you should see a Hello World on your console prio to any further activity
 console.log('Starting my activities');
 init();
+
+//
+// do some initial stuff like creating the dB connection
+//
+function init() {
+    // create the mongo connection once to avoid millions of
+    // connections slowing down the performance
+    mongoclient.connect(config.mongo.url, function (err, db) {
+        if (err)
+            throw err;
+        dbo = db.db(config.mongo.dbname);
+        runCB();
+    });
+}
+
+//
+// will be called by init functions as callback to start program
+//
+function runCB() {
+    //
+    // I used mongo 3.6 for testing installed on an Ubuntu server (don't forget to open the firewall for port 27017)
+    // For checking I installed mongodb also on my windows development client
+    // using the compass client
+    // looks like without any content there will be no DB, I assume the explicit createDB call is not required 
+    //
+    mongoapi.createMongoDB(config.mongo.url, config.mongo.dbname);
+    // creates unique indeces for all payment relevant steem collections
+    for (let i = 0; i < config.mongo.steam_ptrx_collections.length; i++) {
+        mongoapi.createUniqueIndex(dbo, config.mongo.steem_ptrx_collection_prefix + config.mongo.steam_ptrx_collections[i], { account_hist_idx: 1, account_hist_name: 1 }, nullCB);
+    }
+    // create a unique index for the account stats collection
+    // in case the the index was created we start the collection of data per account
+    mongoapi.createUniqueIndex(dbo, config.mongo.steem_account_collection, "account", createAccountCollectionIndexCB);
+    
+
+    //
+    // Do some analyses on the data
+    // since all calls are asysnc you might not get any result at the first run
+    //
+    for (let i = 0; i < test_account_names.length; i++) {
+        mongoapi.find(dbo, "steem_ptrx_claim_reward_balance", { timestamp: RegExp('2018-05.*'), 'account_hist_name': test_account_names[i] }, { _id: 0 }, test_account_names[i], find_claim_reward_balanceCB);
+    }
+    console.log('Good bye all actions triggered');
+}
+
+//
+// Start collection of account transactions
+// and general data of the accounts
+//
+function createAccountCollectionIndexCB(err, indexName) {
+    if (err === null) {
+        // some example account names to fill the 
+        // transaction collections
+ 
+        for (let i = 0; i < test_account_names.length; i++) {
+            // search for the documente related to the account and do something with it
+            mongoapi.find(dbo, config.mongo.steem_account_collection, { account: test_account_names[i] }, { _id: 0 }, test_account_names[i], createAccountDocCB);
+        }
+
+        // Update the steem account data, contains general data about the account
+        // like number of posts, create date...
+        steemapi.getAccounts(test_account_names, getAccountSummeriesCB);
+    }
+}
 
 function evalAccountHistoryPayments(accountname, transaction, trxindex){
     //console.log("   transaction-block: " + transaction.block);
@@ -29,15 +108,6 @@ function evalAccountHistoryPayments(accountname, transaction, trxindex){
     }
     // no suitable operation found
     return -1;
-}
-
-function updateOneCB(err, result, newvalues) {
-    if (err != null) {
-        console.log(err);
-    }
-    else {
-        //console.log("updateOneCB newvals: " + newvalues.$set.low_ptrx);
-    }
 }
 
 //
@@ -84,6 +154,8 @@ function getAccountHistoryCB(accountname, from, high, err, result = []) {
                 //console.log("   transaction-id: " + transaction.trx_id + " timestamp: " + transaction.timestamp+" operationtype: " + operation[0]);
                 for (let j = 0; j < config.mongo.steem_otrx_collection.length; j++) {
                     if (operation[0] === config.mongo.steem_otrx_collection[j]) {
+                        // operation listed, no new operation found
+                        // this piece is just for tet pruposes to ensure I have learned all possible operations
                         handled = true;
                         break;
                     }
@@ -118,7 +190,7 @@ function getFloatValue(pValue, pFactor) {
     return null;
 }
 
-function find_claim_reward_balanceCB(err, result = []) {
+function find_claim_reward_balanceCB(err, result = [], customdata) {
     if (err == null) {
         let steem=0;
         let sbd=0;
@@ -134,7 +206,7 @@ function find_claim_reward_balanceCB(err, result = []) {
             vests += getFloatValue(claimoperation.reward_vests);
         }
 
-        console.log("Sum of "+result.length+" reward entries - steem: " + steem+" sbd: "+sbd+" vests: "+vests);
+        console.log("Sum of " + result.length + " reward entries for account " + customdata+" - steem: " + steem+" sbd: "+sbd+" vests: "+vests);
 
     } else {
         console.log("find_claim_reward_balanceCB failed");
@@ -178,16 +250,16 @@ function createAccountDocCB(err, result,customdata) {
     }
 }
 
-function updateAccountDataDoneCB(err, result) {
-}
-
 function updateAccountDataCB(err, result, customdata) {
     if (result.length === 1) {
         mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: result[0].account }, { $set: { steem_data: customdata } }, updateAccountDataDoneCB)
     }
 }
+
+//
 // requests details of an array of accounts
-// since the fucntions are asynchronous you need to work with callbacks to get the data
+// since the functions are asynchronous you need to work with callbacks to get the data
+//
 function getAccountSummeriesCB(err, result = []) {
     if (err == null) {
         // we should get an array with data of accounts
@@ -205,69 +277,15 @@ function getAccountSummeriesCB(err, result = []) {
     }
 }
 
-
-function createAccountCollectionIndexCB(err,indexName) {
-    // some example account names to fill the 
-    // transaction collections
-    var accountnames = [
-        "endurance1968",
-        "taxguy",
-        "sempervideo",
-        "theaustrianguy",
-        "lenatramper",
-        "uwelang",
-        "steemitblog",
-        "berniesanders",
-        "adsactly",
-        "haejin",
-        "jedigeiss",
-        "dtube"/*,
-        "steem"*/
-    ];
-    for (let i = 0; i < accountnames.length; i++) {
-        // search for the documente related to the account and do something with it
-        mongoapi.find(dbo, config.mongo.steem_account_collection, { account: accountnames[i] }, { _id: 0 }, accountnames[i], createAccountDocCB);
-    }
-    // Update the account data
-    steemapi.getAccounts(accountnames, getAccountSummeriesCB);
-}
-
 function nullCB() { }
-
-function runCB() {
-    //
-    // I used mongo 3.6 for testing installed on an Ubuntu server (don't forget to open the firewall for port 27017)
-    // For checking I installed mongodb also on my windows development client
-    // using the compass client
-    // looks like without any content there will be no DB, I assume the explicit createDB call is not required 
-    //
-    mongoapi.createMongoDB(config.mongo.url, config.mongo.dbname);
-    //
-    // creates a collection within our db
-    // Note: collections are similar to tables in a classic SQL db
-    //
-    //mongoapi.createCollection(dbo,"steemit_history");
-    //mongoapi.createCollection(dbo, config.mongo.steem_account_collection);  
-    mongoapi.createUniqueIndex(dbo, config.mongo.steem_account_collection, "account", createAccountCollectionIndexCB);
-    for (let i = 0; i < config.mongo.steam_ptrx_collections.length; i++) {
-        mongoapi.createUniqueIndex(dbo, config.mongo.steem_ptrx_collection_prefix + config.mongo.steam_ptrx_collections[i], { account_hist_idx: 1, account_hist_name: 1 }, nullCB);
+function updateAccountDataDoneCB(err, result) {}
+function updateOneCB(err, result, newvalues) {
+    if (err != null) {
+        console.log(err);
     }
-    //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "endurance1968" }, { _id: 0 }, find_claim_reward_balanceCB);
-    //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "taxguy" }, { _id: 0 }, find_claim_reward_balanceCB);
-    //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "theaustrianguy" }, { _id: 0 }, find_claim_reward_balanceCB);
-    //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "uwelang" }, { _id: 0 }, find_claim_reward_balanceCB);
-    //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "haejin" }, { _id: 0 }, find_claim_reward_balanceCB);
-    //mongoapi.find(dbo, "steem_trx_claim_reward_balance", { timestamp: RegExp('2018-.*'), 'op.account': "sempervideo" }, { _id: 0 }, find_claim_reward_balanceCB);
-    console.log('Good bye all actions triggered');
+    else {
+        //console.log("updateOneCB newvals: " + newvalues.$set.low_ptrx);
+    }
 }
 
-function init() {
-    // create the mongo connection once to avoid millions of
-    // connections slowing down the performance
-    mongoclient.connect(config.mongo.url, function (err, db) {
-        if (err)
-            throw err;
-        dbo = db.db(config.mongo.dbname);
-        runCB();
-    });
-}
+
