@@ -59,8 +59,9 @@ exports.createIndex = function (dbo, collection, index, callback) {
 }
 
 exports.updateOne = function (dbo, collection, query, newvalues, callback) {
-    dbo.collection(collection).updateOne(query, newvalues, function (err, res) {
+    dbo.collection(collection).updateOne(query, newvalues, function (err, result) {
         if (err)
             throw err;
+        callback(err,result)
     });
 }

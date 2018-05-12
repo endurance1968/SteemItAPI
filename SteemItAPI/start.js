@@ -290,6 +290,7 @@ function createAccountDocCB(err, result,customdata) {
         // 
         let  accountdoc = {
             account: customdata,
+            steem_data : "",
             low_ptrx: -1,
             high_ptrx: -1
         };
@@ -308,105 +309,35 @@ function createAccountDocCB(err, result,customdata) {
     }
 }
 
+function updateAccountDataDoneCB(err, result) {
+}
+
+function updateAccountDataCB(err, result, customdata) {
+    if (result.length === 1) {
+        mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: result[0].account }, { $set: { steem_data: customdata } }, updateAccountDataDoneCB)
+    }
+}
 // requests details of an array of accounts
 // since the fucntions are asynchronous you need to work with callbacks to get the data
-function getAccountsCB(err, result = []) {
+function getAccountSummeriesCB(err, result = []) {
     if (err == null) {
         // we should get an array with data of accounts
         for (let i = 0; i < result.length; i++) {
-            /*
-              { id: 586156,
-              name: 'endurance1968',
-              owner:
-               { weight_threshold: 1,
-                 account_auths: [],
-                 key_auths: [ [Array] ] },
-              active:
-               { weight_threshold: 1,
-                 account_auths: [],
-                 key_auths: [ [Array] ] },
-              posting:
-               { weight_threshold: 1,
-                 account_auths: [ [Array] ],
-                 key_auths: [ [Array] ] },
-              memo_key: 'STM5ZQ2HHE7KZy9yotctFt6CECbFsUXVsyuy7KFNJiDfHURMy721x',
-              json_metadata: '{"profile":{"name":"Endurance","about":"IoT, renewable energy, smarthome","location":"Germany","website":"https://okedv.dyndns.org/wbb/wcf/","profile_image":"https://okedv.dyndns.org/endurance.png","cover_image":"https://okedv.dyndns.org/steembackground.png"}}',
-              proxy: '',
-              last_owner_update: '2018-02-17T07:54:06',
-              last_account_update: '2018-05-05T04:21:15',
-              created: '2018-01-08T21:24:00',
-              mined: false,
-              recovery_account: 'steem',
-              last_account_recovery: '1970-01-01T00:00:00',
-              reset_account: 'null',
-              comment_count: 0,
-              lifetime_vote_count: 0,
-              post_count: 492,
-              can_vote: true,
-              voting_power: 6654,
-              last_vote_time: '2018-05-06T05:32:27',
-              balance: '0.028 STEEM',
-              savings_balance: '0.000 STEEM',
-              sbd_balance: '0.136 SBD',
-              sbd_seconds: '381077865',
-              sbd_seconds_last_update: '2018-05-05T17:41:54',
-              sbd_last_interest_payment: '2018-04-30T20:14:21',
-              savings_sbd_balance: '1.476 SBD',
-              savings_sbd_seconds: '0',
-              savings_sbd_seconds_last_update: '2018-05-04T20:33:54',
-              savings_sbd_last_interest_payment: '1970-01-01T00:00:00',
-              savings_withdraw_requests: 0,
-              reward_sbd_balance: '0.000 SBD',
-              reward_steem_balance: '0.000 STEEM',
-              reward_vesting_balance: '0.000000 VESTS',
-              reward_vesting_steem: '0.000 STEEM',
-              vesting_shares: '33069.663388 VESTS',
-              delegated_vesting_shares: '0.000000 VESTS',
-              received_vesting_shares: '0.000000 VESTS',
-              vesting_withdraw_rate: '0.000000 VESTS',
-              next_vesting_withdrawal: '1969-12-31T23:59:59',
-              withdrawn: 0,
-              to_withdraw: 0,
-              withdraw_routes: 0,
-              curation_rewards: 141,
-              posting_rewards: 8593,
-              proxied_vsf_votes: [ 0, 0, 0, 0 ],
-              witnesses_voted_for: 1,
-              last_post: '2018-05-06T05:35:24',
-              last_root_post: '2018-05-06T05:20:36',
-              average_bandwidth: '90892730970',
-              lifetime_bandwidth: '834561000000',
-              last_bandwidth_update: '2018-05-06T05:35:24',
-              average_market_bandwidth: 2497090717,
-              lifetime_market_bandwidth: '25590000000',
-              last_market_bandwidth_update: '2018-05-04T20:34:21',
-              vesting_balance: '0.000 STEEM',
-              reputation: '124347211954',
-              transfer_history: [],
-              market_history: [],
-              post_history: [],
-              vote_history: [],
-              other_history: [],
-              witness_votes: [ 'sempervideo' ],
-              tags_usage: [],
-              guest_bloggers: [] }
-            */
-            //console.log(result[i]);
+
             console.log("account-ID: " + result[i].id + " account-name:" + result[i].name + " number of posts:" + result[i].post_count);
 
             for (let j = 0; j < result[i].transfer_history.length; j++) {
                 console.log(result[i].transfer_history[j]);
             }
+            mongoapi.find(dbo, config.mongo.steem_account_collection, { account: result[i].name }, { _id: 0 }, result[i], updateAccountDataCB);
         }
-
-    } else { console.log("getAccount failed"); }
+    } else {
+        console.log("getAccount failed");
+    }
 }
 
 
 function createAccountCollectionIndexCB(err,indexName) {
-    // now do some real action
-    //steemapi.getAccounts([config.steem.username, 'endurance1968'], getAccountsCB);
-
     // some example account names to fill the 
     // transaction collections
     var accountnames = [
@@ -425,8 +356,11 @@ function createAccountCollectionIndexCB(err,indexName) {
         "steem"*/
     ];
     for (let i = 0; i < accountnames.length; i++) {
+        // search for the documente related to the account and do something with it
         mongoapi.find(dbo, config.mongo.steem_account_collection, { account: accountnames[i] }, { _id: 0 }, accountnames[i], createAccountDocCB)
     }
+    // Update the account data
+    steemapi.getAccounts(accountnames, getAccountSummeriesCB);
 }
 
 
