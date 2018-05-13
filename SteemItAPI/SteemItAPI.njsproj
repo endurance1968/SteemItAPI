@@ -35,6 +35,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="learning\learning_01.js" />
+    <Compile Include="learning\start.js" />
     <Compile Include="start.js" />
     <Compile Include="api\steemapi.js">
       <SubType>Code</SubType>

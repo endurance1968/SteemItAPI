@@ -218,7 +218,6 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             //
             var csv = "";
             var year = 2018;
-            var month = 0;
             var filename = "d:\\temp\\steem" + '-' + customdata + '-' + year + '.csv';
             /*
             // Master CSV Data Line
@@ -226,17 +225,17 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount" + "EUR Capital Gain;" + "From Type;";
             csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
             */
-            csv = year+";" + "quarter;" + month+";" + "week;" + "SBD;" + "date;" + transaction.timestamp+";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-            csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + " EUR B';" + "EUR C Gain;" + "SELF;";
-            csv += "SELF;" + sbd + ";" + "Prior B;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
+            csv = "year;" + "quarter;" + "month;" + "week;" + "SBD;" + "date;" + "date / time;" + "transaction id;" + "IN;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount;" +" EUR Balance';"+ "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + sbd + ";" + "Prior Balance;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
             appendFile(filename, csv);
-            csv = year +";" + "quarter;" + month +";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-            csv += claimoperation.account + ";" + customdata+";" + "Info;" + "EUR Prior B;" + "EUR A;" + " EUR B';" + "EUR C Gain;" + "SELF;";
-            csv += "SELF;" + steem + ";" + "Prior B;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
+            csv = "year;" + "quarter;" + "month;" + "week;" + "STEEM;" + "date;" + "date / time;" + "transaction id;" + "IN;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount;" + " EUR Balance';" + "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + steem + ";" + "Prior Balance;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
             appendFile(filename, csv);
-            csv = year +";" + "quarter;" + month +";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-            csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + " EUR B';" + "EUR C Gain;" + "SELF;";
-            csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
+            csv = "year;" + "quarter;" + "month;" + "week;" + "VESTS;" + "date;" + "date / time;" + "transaction id;" + "IN;" + "Type;";
+            csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount;" + " EUR Balance';" + "EUR Capital Gain;" + "From Type;";
+            csv += "To Type;" + vests + ";" + "Prior Balance;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
             appendFile(filename, csv);
         }
     } else {
