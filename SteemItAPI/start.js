@@ -5,7 +5,7 @@ var mongoclient = require('mongodb').MongoClient;
 // import my steem modules
 var steemapi = require('./api/steemapi');
 var mongoapi = require('./api/mongoapi');
-var config = require('./config');f
+var config = require('./config');
 
 var fs = require('fs');
 
@@ -217,10 +217,12 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             //
             // Export to CSV
             //
-            var csv = "";
-            var year = 2018;
-            var month = 0;
-            var filename = "d:\\temp\\steem" + '-' + customdata + '-' + year + '.csv';
+            let csv = "";
+            let timestamp = new Date(transaction.timestamp);
+            let year = timestamp.getFullYear();
+            let month = timestamp.getMonth()+1;
+            let filename = "d:\\temp\\steem" + '-' + customdata + '-' + year + '.csv';
+
             /*
             // Master CSV Data Line
             csv = "year;" + "quarter;" + "month;" + "week;" + "currency;" + "date;" + "date / time;" + "transaction id;" + "In/out;" + "Type;";
@@ -228,25 +230,25 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
             */
             if (sbd != 0) {
-                csv = year + ";" + "quarter;" + month + ";" + "week;" + "SBD;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-                csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv = year + ";" + "quarter;" + month + ";" + "week;" + "SBD;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "CLAIM;";
+                csv += claimoperation.account + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + sbd + ";" + "Prior B;" + "Balance;" + "EUR-SBD R;" + ";" + "" + '\n';
                 appendFile(filename, csv);
             }
             if (steem != 0) {
-                csv = year + ";" + "quarter;" + month + ";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-                csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv = year + ";" + "quarter;" + month + ";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "CLAIM;";
+                csv += claimoperation.account + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + steem + ";" + "Prior B;" + "Balance;" + ";" + "EUR-Steem R;" + "" + '\n';
                 appendFile(filename, csv);
             }
             if (vests != 0) {
-                csv = year + ";" + "quarter;" + month + ";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-                csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv = year + ";" + "quarter;" + month + ";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "CLAIM;";
+                csv += claimoperation.account + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + ";" + ";" + "EUR-VESTS Rate" + '\n';
                 appendFile(filename, csv);
-            }
-            console.log("find_claim_reward_balanceCB for "+customdata+" done");
-        }
+            }            
+        } // endof for
+        console.log("find_claim_reward_balanceCB for " + customdata + " done");
     } else {
         console.log("find_claim_reward_balanceCB failed");
     }
