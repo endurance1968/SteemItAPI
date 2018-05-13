@@ -112,7 +112,7 @@ function getAccountsCB(err,result=[]) {
 //
 // retrieve account history
 //
-function getAccountHistoryCB(accountname, from, high, err, result = []) {
+function getAccountHistoryCB(err, result = []) {
     if (err == null) {
         // we should get an array with data of accounts
         for (let i = 0; i < result.length; i++) {
@@ -196,11 +196,9 @@ function getAccountHistoryCB(accountname, from, high, err, result = []) {
             }
 
         }
-    } else {
-        console.log("getAccountHistory failed");
-    }
+    } else { console.log("getAccountHistory failed"); }
 }
 // get the latest 100 history entries
-steemapi.getAccountHistory(config.steem.username, -1, 100, -1, getAccountHistoryCB);
+steemapi.getAccountHistory(config.steem.username, -1, 100, getAccountHistoryCB);
 
 console.log('Good bye');

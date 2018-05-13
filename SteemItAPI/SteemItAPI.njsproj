@@ -11,7 +11,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0a8a844b-81c6-4770-9ed6-a84c34ee923a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>start.js</StartupFile>
+    <StartupFile>learning\learning_01.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -35,7 +35,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="learning\learning_01.js" />
-    <Compile Include="learning\start.js" />
+    <Compile Include="learning\learning_02.js" />
     <Compile Include="start.js" />
     <Compile Include="api\steemapi.js">
       <SubType>Code</SubType>

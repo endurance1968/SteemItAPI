@@ -3,9 +3,9 @@
 var mongoclient = require('mongodb').MongoClient;
 
 // import my steem modules
-var steemapi = require('./api/steemapi');
-var mongoapi = require('./api/mongoapi');
-var config = require('./config');
+var steemapi = require('../api/steemapi');
+var mongoapi = require('../api/mongoapi');
+var config = require('../config');
 
 var fs = require('fs');
 

@@ -5,7 +5,7 @@ var mongoclient = require('mongodb').MongoClient;
 // import my steem modules
 var steemapi = require('./api/steemapi');
 var mongoapi = require('./api/mongoapi');
-var config = require('./config');
+var config = require('./config');f
 
 var fs = require('fs');
 
@@ -190,7 +190,8 @@ function getAccountHistoryCB(accountname, from, high, err, result = []) {
 }
 
 function getFloatValue(pValue, pFactor) {
-    if (pValue === undefined || pValue === null || pValue === '') return null;
+    if (pValue === undefined || pValue === null || pValue === '')
+        return null;
     var separator = pValue.indexOf(' ');
     if (separator > 0) {
         return parseFloat(pValue.substring(0, separator)) * (pFactor !== undefined && pFactor !== null ? pFactor : 1.0);
@@ -209,9 +210,9 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             let operation = transaction.op;
             let claimoperation = operation[1];
 
-            sbd     = getFloatValue(claimoperation.reward_sbd);
-            steem   = getFloatValue(claimoperation.reward_steem);
-            vests   = getFloatValue(claimoperation.reward_vests);
+            sbd = getFloatValue(claimoperation.reward_sbd);
+            steem = getFloatValue(claimoperation.reward_steem);
+            vests = getFloatValue(claimoperation.reward_vests);
 
             //
             // Export to CSV
@@ -226,18 +227,25 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount" + "EUR Capital Gain;" + "From Type;";
             csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
             */
-            csv = year+";" + "quarter;" + month+";" + "week;" + "SBD;" + "date;" + transaction.timestamp+";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-            csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + " EUR B';" + "EUR C Gain;" + "SELF;";
-            csv += "SELF;" + sbd + ";" + "Prior B;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
-            appendFile(filename, csv);
-            csv = year +";" + "quarter;" + month +";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-            csv += claimoperation.account + ";" + customdata+";" + "Info;" + "EUR Prior B;" + "EUR A;" + " EUR B';" + "EUR C Gain;" + "SELF;";
-            csv += "SELF;" + steem + ";" + "Prior B;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
-            appendFile(filename, csv);
-            csv = year +";" + "quarter;" + month +";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
-            csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + " EUR B';" + "EUR C Gain;" + "SELF;";
-            csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + "EUR-SBD Rate;" + "EUR-Steem Rate;" + "EUR-VESTS Rate"+ '\n';
-            appendFile(filename, csv);
+            if (sbd != 0) {
+                csv = year + ";" + "quarter;" + month + ";" + "week;" + "SBD;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
+                csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += "SELF;" + sbd + ";" + "Prior B;" + "Balance;" + "EUR-SBD R;" + ";" + "" + '\n';
+                appendFile(filename, csv);
+            }
+            if (steem != 0) {
+                csv = year + ";" + "quarter;" + month + ";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
+                csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += "SELF;" + steem + ";" + "Prior B;" + "Balance;" + ";" + "EUR-Steem R;" + "" + '\n';
+                appendFile(filename, csv);
+            }
+            if (vests != 0) {
+                csv = year + ";" + "quarter;" + month + ";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "Claim;";
+                csv += claimoperation.account + ";" + customdata + ";" + "Info;" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + ";" + ";" + "EUR-VESTS Rate" + '\n';
+                appendFile(filename, csv);
+            }
+            console.log("find_claim_reward_balanceCB for "+customdata+" done");
         }
     } else {
         console.log("find_claim_reward_balanceCB failed");
@@ -352,6 +360,7 @@ function createCsvSteemOutputHeader() {
         output += 'To Type;';
         output += 'Amount;';
         output += 'Prior Balance;';
+        output += 'Balance;';
         output += 'EUR-SBD Rate;';
         output += 'EUR-STEEM Rate;';
         output += 'EUR-VESTS Rate;';
