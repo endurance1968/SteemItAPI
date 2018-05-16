@@ -33,6 +33,7 @@ config.mongo.steam_ptrx_collections = [
     'fill_convert_request',
     'interest',
     'account_create',
+    'fill_order',
     'pow'
 ]
 config.mongo.steem_otrx_collection = [
@@ -44,7 +45,6 @@ config.mongo.steem_otrx_collection = [
     'comment_options',
     'delegate_vesting_shares',
     'account_witness_vote',
-    'fill_order',
     'limit_order_create',
     'limit_order_cancel',
     'delete_comment',
