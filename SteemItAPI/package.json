@@ -7,8 +7,11 @@
     "name": "olaf.krause"
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
+    "cryptocompare-api": "^1.0.2",
     "mongodb": "^3.0.7",
-    "npm": "^6.0.0",
+    "node-fetch": "^2.1.2",
+    "npm": "^6.0.1",
     "steem": "^0.7.1"
   }
 }

@@ -28,6 +28,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\exchange-rate-tool.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="api\steem-per-mvest-tool.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="config.js">
       <SubType>Code</SubType>
     </Compile>
@@ -40,12 +46,16 @@
     <Compile Include="api\steemapi.js">
       <SubType>Code</SubType>
     </Compile>
+    <Content Include="data\steem_per_mvests.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
     <Folder Include="learning\" />
+    <Folder Include="data\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

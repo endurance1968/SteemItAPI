@@ -5,6 +5,8 @@ var mongoclient = require('mongodb').MongoClient;
 // import my steem modules
 var steemapi = require('./api/steemapi');
 var mongoapi = require('./api/mongoapi');
+var exratetool = require('./api/exchange-rate-tool');
+var steemvesttool = require('./api/steem-per-mvest-tool.js');
 var config = require('./config');
 
 var fs = require('fs');
@@ -36,12 +38,21 @@ init();
 function init() {
     // create the mongo connection once to avoid millions of
     // connections slowing down the performance
-    mongoclient.connect(config.mongo.url, function (err, db) {
-        if (err)
-            throw err;
-        dbo = db.db(config.mongo.dbname);
-        run();
-    });
+    steemvesttool.loadAsync(
+    ).then(
+        exratetool.loadExchangeRatesAsync("STEEM", "BTC", 1000)
+        ).then(
+        //exratetool.loadExchangeRatesAsync("SBD", "BTC", 1000)
+        ).then(
+        exratetool.loadExchangeRatesAsync("BTC", "EUR", 1000)
+        ).then(() => {
+                mongoclient.connect(config.mongo.url, function (err, db) {
+                if (err)
+                    throw err;
+                dbo = db.db(config.mongo.dbname);
+                run();
+            });
+        });
 }
 
 //
@@ -124,13 +135,13 @@ function evalAccountHistoryPayments(accountname, transaction, trxindex){
 // retrieve account history
 //
 function getAccountHistoryCB(accountname, from, high, err, result = []) {
-    if (err == null) {
+    if (err === null) {
         let finalcall = false;
         // we should get an array with data of accounts
         if (result.length > 0) {
             let lastindex = result[result.length - 1][0];
             if (high === -1) {
-                mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { high_ptrx: lastindex } }, updateOneCB)
+                mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { high_ptrx: lastindex } }, updateOneCB);
                 high = lastindex;
             }
             let newfrom = lastindex - (config.steem.accounthistmaxretr + 1);
@@ -152,13 +163,13 @@ function getAccountHistoryCB(accountname, from, high, err, result = []) {
 
         let trxindex = -1;
         let handled = false;
-        for (let i = (result.length - 1); i >= 0; i--) {
+        for (let i = result.length - 1; i >= 0; i--) {
             //console.log(result);
             //console.log("history-ID: " + result[i][0]);
             let transaction = result[i][1];
 
             let returnval = evalAccountHistoryPayments(accountname, transaction, result[i][0]);
-            if (returnval == -1) {
+            if (returnval === -1) {
                 //console.log("   transaction-block: " + transaction.block);
                 let operation = transaction.op;
                 //console.log("   transaction-id: " + transaction.trx_id + " timestamp: " + transaction.timestamp+" operationtype: " + operation[0]);
@@ -175,13 +186,13 @@ function getAccountHistoryCB(accountname, from, high, err, result = []) {
                 handled = true;
             }
 
-            if (handled != true) {
+            if (handled !== true) {
                 console.log("unhandled opertion: " + operation[0]);
             }
         }
         // update latest insert stat
         // this update will not work properly as the functions are asyncronous therefore later calls might be earlier and  overwritten
-        if (trxindex != -1) { 
+        if (trxindex !== -1) { 
             mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: accountname }, { $set: { low_ptrx: trxindex } }, updateOneCB);
             //console.log("getAccountHistory for account: " + accountname + " updaterequest low_ptrx: " + trxindex)
         }
@@ -202,7 +213,7 @@ function getFloatValue(pValue, pFactor) {
 }
 
 function find_curation_rewardCB(err, result = [], customdata) {
-    if (err == null) {
+    if (err === null) {
         let steem = 0;
         let sbd = 0;
         let vests = 0;
@@ -213,12 +224,33 @@ function find_curation_rewardCB(err, result = [], customdata) {
             let operation = op[1];
 
             vests = getFloatValue(operation.reward);
+            let btc = 0;
+            let eur = 0;
+            let timestamp = new Date(transaction.timestamp);
+
+            var dateKey = exratetool.convertDateUtcToInt(timestamp);
+
+            // just fpr testing as VESTS needs to be converted to STEEM before
+            if (vests !== null) {
+                var exchangeData = exratetool.getExchangeRate('STEEM-BTC', dateKey);
+                if (exchangeData !== null) {
+                    let exchange = exchangeData.close;
+                    btc = vests * exchangeData.close;
+                }
+            }
+            if (btc !== 0) {
+                var exchangeData = exratetool.getExchangeRate('BTC-EUR', dateKey);
+                if (exchangeData !== null) {
+                    let exchange = exchangeData.close;
+                    eur = btc * exchangeData.close;
+                }
+            }
 
             //
             // Export to CSV
             //
             let csv = "";
-            let timestamp = new Date(transaction.timestamp);
+            
             let year = timestamp.getFullYear();
             let month = timestamp.getMonth() + 1;
             let filename = "d:\\temp\\steem" + '-' + customdata + '-' + year + '.csv';
@@ -229,9 +261,9 @@ function find_curation_rewardCB(err, result = [], customdata) {
             csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount" + "EUR Capital Gain;" + "From Type;";
             csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
             */
-            if (vests != 0) {
+            if (vests !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "CURATION REWARD;";
-                csv += operation.comment_author + ";" + operation.curator + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += operation.comment_author + ";" + operation.curator + ";" + ";" + "EUR Prior B;" + eur+";" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + ";" + ";" + "EUR-VESTS Rate" + '\n';
                 appendFile(filename, csv);
             }
@@ -243,7 +275,7 @@ function find_curation_rewardCB(err, result = [], customdata) {
 }
 
 function find_author_rewardCB(err, result = [], customdata) {
-    if (err == null) {
+    if (err === null) {
         let steem = 0;
         let sbd = 0;
         let vests = 0;
@@ -252,16 +284,35 @@ function find_author_rewardCB(err, result = [], customdata) {
             let transaction = result[i];
             let op = transaction.op;
             let operation = op[1];
+            let btc = 0;
+            let eursteem = 0;
+            let timestamp = new Date(transaction.timestamp);
 
             sbd = getFloatValue(operation.sbd_payout);
             steem = getFloatValue(operation.steem_payout);
             vests = getFloatValue(operation.vesting_payout);
 
+            var dateKey = exratetool.convertDateUtcToInt(timestamp);
+            if (steem !== null) {
+                var exchangeData = exratetool.getExchangeRate('STEEM-BTC', dateKey);
+                if (exchangeData !== null) {
+                    let exchange = exchangeData.close;
+                    btc = steem * exchangeData.close;
+                }
+            }
+            if (btc !== 0) {
+                var exchangeData = exratetool.getExchangeRate('BTC-EUR', dateKey);
+                if (exchangeData !== null) {
+                    let exchange = exchangeData.close;
+                    eursteem = btc * exchangeData.close;
+                }
+            }
+
             //
             // Export to CSV
             //
             let csv = "";
-            let timestamp = new Date(transaction.timestamp);
+            
             let year = timestamp.getFullYear();
             let month = timestamp.getMonth() + 1;
             let filename = "d:\\temp\\steem" + '-' + customdata + '-' + year + '.csv';
@@ -272,21 +323,21 @@ function find_author_rewardCB(err, result = [], customdata) {
             csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount" + "EUR Capital Gain;" + "From Type;";
             csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
             */
-            if (sbd != 0) {
+            if (sbd !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "SBD;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "AUTHOR REWARD;";
-                csv += operation.author + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += operation.author + ";" + customdata + ";" + ";" + "EUR Prior B;" + 0+";" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + sbd + ";" + "Prior B;" + "Balance;" + "EUR-SBD R;" + ";" + "" + '\n';
                 appendFile(filename, csv);
             }
-            if (steem != 0) {
+            if (steem !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "AUTHOR REWARD;";
-                csv += operation.author + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += operation.author + ";" + customdata + ";" + ";" + "EUR Prior B;" + eursteem+";" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + steem + ";" + "Prior B;" + "Balance;" + ";" + "EUR-Steem R;" + "" + '\n';
                 appendFile(filename, csv);
             }
-            if (vests != 0) {
+            if (vests !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "IN;" + "AUTHOR REWARD;";
-                csv += operation.author + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
+                csv += operation.author + ";" + customdata + ";" + ";" + "EUR Prior B;" + 0+";" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + ";" + ";" + "EUR-VESTS Rate" + '\n';
                 appendFile(filename, csv);
             }
@@ -298,7 +349,7 @@ function find_author_rewardCB(err, result = [], customdata) {
 }
 
 function find_claim_reward_balanceCB(err, result = [], customdata) {
-    if (err == null) {
+    if (err === null) {
         let steem=0;
         let sbd=0;
         let vests = 0;
@@ -327,19 +378,19 @@ function find_claim_reward_balanceCB(err, result = [], customdata) {
             csv += "From Account;" + "ToAccount;" + "Info;" + "EUR Prior Balance;" + "EUR Amount" + "EUR Capital Gain;" + "From Type;";
             csv += "To Type;" + "Amount;"+"Prior Balance;"+"Balance;"+"EUR-SBD Rate;"+"EUR-Steem Rate;"+"EUR-VESTS Rate"+ '\n';
             */
-            if (sbd != 0) {
+            if (sbd !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "SBD;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "N/A;" + "CLAIM;";
                 csv += operation.account + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + sbd + ";" + "Prior B;" + "Balance;" + "EUR-SBD R;" + ";" + "" + '\n';
                 appendFile(filename, csv);
             }
-            if (steem != 0) {
+            if (steem !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "STEEM;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "N/A;" + "CLAIM;";
                 csv += operation.account + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + steem + ";" + "Prior B;" + "Balance;" + ";" + "EUR-Steem R;" + "" + '\n';
                 appendFile(filename, csv);
             }
-            if (vests != 0) {
+            if (vests !== 0) {
                 csv = year + ";" + "quarter;" + month + ";" + "week;" + "VESTS;" + "date;" + transaction.timestamp + ";" + transaction.account_hist_idx + ";" + "N/A;" + "CLAIM;";
                 csv += operation.account + ";" + customdata + ";" + ";" + "EUR Prior B;" + "EUR A;" + "EUR B;" + "EUR C Gain;" + "SELF;";
                 csv += "SELF;" + vests + ";" + "Prior B;" + "Balance;" + ";" + ";" + "EUR-VESTS Rate" + '\n';
@@ -391,7 +442,7 @@ function createAccountDocCB(err, result,customdata) {
 
 function updateAccountDataCB(err, result, customdata) {
     if (result.length === 1) {
-        mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: result[0].account }, { $set: { steem_data: customdata } }, updateAccountDataDoneCB)
+        mongoapi.updateOne(dbo, config.mongo.steem_account_collection, { account: result[0].account }, { $set: { steem_data: customdata } }, updateAccountDataDoneCB);
     }
 }
 
@@ -400,7 +451,7 @@ function updateAccountDataCB(err, result, customdata) {
 // since the functions are asynchronous you need to work with callbacks to get the data
 //
 function getAccountSummeriesCB(err, result = []) {
-    if (err == null) {
+    if (err === null) {
         // we should get an array with data of accounts
         for (let i = 0; i < result.length; i++) {
 
@@ -475,7 +526,7 @@ function createCsvSteemOutputHeader() {
 function nullCB() { }
 function updateAccountDataDoneCB(err, result) {}
 function updateOneCB(err, result, newvalues) {
-    if (err != null) {
+    if (err !== null) {
         console.log(err);
     }
     else {
